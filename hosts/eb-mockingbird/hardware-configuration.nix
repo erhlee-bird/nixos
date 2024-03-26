@@ -3,10 +3,13 @@
 # to /etc/nixos/configuration.nix instead.
 { config, lib, pkgs, modulesPath, ... }:
 
-{
-  imports = [ 
-    (modulesPath + "/installer/scan/not-detected.nix") 
-    <home-manager/nixos>
+let
+  nixos-hardware = builtins.fetchTarball
+    "https://github.com/NixOS/nixos-hardware/archive/master.tar.gz";
+in {
+  imports = [
+    (import "${nixos-hardware}/framework/13-inch/7040-amd")
+    (modulesPath + "/installer/scan/not-detected.nix")
   ];
 
   boot.initrd.availableKernelModules =
@@ -51,6 +54,7 @@
   services.fwupd.enable = true;
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
+  powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
   hardware.cpu.amd.updateMicrocode =
     lib.mkDefault config.hardware.enableRedistributableFirmware;
 }

@@ -6,7 +6,7 @@
     # gui
     dunst.enable = true;
     eww.enable = true;
-    hyprland.enable = true;
+    hyprland.enable = false;
     wofi.enable = true;
 
     # cli
