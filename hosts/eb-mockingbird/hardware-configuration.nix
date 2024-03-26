@@ -4,7 +4,10 @@
 { config, lib, pkgs, modulesPath, ... }:
 
 {
-  imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
+  imports = [ 
+    (modulesPath + "/installer/scan/not-detected.nix") 
+    <home-manager/nixos>
+  ];
 
   boot.initrd.availableKernelModules =
     [ "nvme" "xhci_pci" "thunderbolt" "uas" "sd_mod" ];
@@ -43,6 +46,9 @@
   # with explicit per-interface declarations with `networking.interfaces.<interface>.useDHCP`.
   networking.useDHCP = lib.mkDefault true;
   # networking.interfaces.wlp1s0.useDHCP = lib.mkDefault true;
+
+  services.fprintd.enable = true;
+  services.fwupd.enable = true;
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   hardware.cpu.amd.updateMicrocode =
