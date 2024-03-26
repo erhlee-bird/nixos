@@ -7,6 +7,7 @@
     ./eww
     ./dunst
     ./hyprland
+    ./xserver
     ./wofi
 
     # cli

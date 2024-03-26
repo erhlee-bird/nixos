@@ -16,9 +16,6 @@ in {
       anki-bin
       bandw
       bat
-      exa
-      ffmpeg
-      firefox
       fzf
       git
       gnupg
@@ -35,11 +32,12 @@ in {
       pqiv
       python3
       ripgrep
-      screen
       slop
       slurp
       tealdeer
+      tmux
       unzip
+      vim
       wf-recorder
       zig
       zk

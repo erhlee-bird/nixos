@@ -11,7 +11,8 @@ in {
     # Fix pass
     services.gpg-agent = {
       enable = true;
-      pinentryFlavor = "qt";
+      # XXX: This needs a package input.
+      # pinentryPackage = "qt";
     };
   };
 }

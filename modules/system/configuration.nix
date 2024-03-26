@@ -1,18 +1,31 @@
 { config, pkgs, inputs, ... }:
 
 {
+  nixpkgs.config.allowUnfree = true;
+
   # Remove unecessary preinstalled packages
   environment.defaultPackages = [ ];
   services.xserver.desktopManager.xterm.enable = false;
 
-  programs.zsh.enable = true;
-
   # Laptop-specific packages (the other ones are installed in `packages.nix`)
-  environment.systemPackages = with pkgs; [ acpi tlp git ];
+  environment.systemPackages = with pkgs; [
+    acpi
+    git
+    jq
+    nixfmt
+    ripgrep
+    tlp
+    vim
+  ];
 
   # Install fonts
   fonts = {
-    fonts = with pkgs; [
+    fontconfig = {
+      hinting.autohint = true;
+      defaultFonts = { emoji = [ "OpenMoji Color" ]; };
+    };
+
+    packages = with pkgs; [
       corefonts
       dejavu_fonts
       font-awesome
@@ -30,11 +43,6 @@
       terminus_font
       terminus_font_ttf
     ];
-
-    fontconfig = {
-      hinting.autohint = true;
-      defaultFonts = { emoji = [ "OpenMoji Color" ]; };
-    };
   };
 
   # Wayland stuff: enable XDG integration, allow sway to use brillo
@@ -67,22 +75,20 @@
 
   # Boot settings: clean /tmp/, latest kernel and enable bootloader
   boot = {
-    cleanTmpDir = true;
     loader = {
       systemd-boot.enable = true;
       systemd-boot.editor = false;
       efi.canTouchEfiVariables = true;
       timeout = 0;
     };
+    tmp.cleanOnBoot = true;
   };
 
   # Set up locales (timezone and keyboard layout)
   time.timeZone = "America/New_York";
   i18n.defaultLocale = "en_US.UTF-8";
-  console = {
-    font = "Lat2-Terminus16";
-    keyMap = "us";
-  };
+  console.font = "ter-i32b";
+  console.packages = with pkgs; [ terminus_font ];
 
   # Set up user and enable sudo
   users.users.ebird = {
@@ -129,15 +135,7 @@
 
   # Security 
   security = {
-    sudo.enable = false;
-    doas = {
-      enable = true;
-      extraRules = [{
-        users = [ "ebird" ];
-        keepEnv = true;
-        persist = true;
-      }];
-    };
+    sudo.enable = true;
 
     # Extra security
     protectKernelImage = true;
