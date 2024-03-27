@@ -12,35 +12,37 @@ in {
   options.modules.packages = { enable = mkEnableOption "packages"; };
   config = mkIf cfg.enable {
     home.packages = with pkgs; [
-      age
-      anki-bin
-      bandw
-      bat
+      # System utilities.
+      emacs
       fzf
       git
+      git-lfs
       gnupg
-      google-chrome
-      grim
       htop
-      imagemagick
+      jq
       libnotify
-      lowdown
-      lua
-      maintenance
-      mpv
-      pass
-      pqiv
-      python3
+      parallel
       ripgrep
-      slop
-      slurp
-      tealdeer
       tmux
       unzip
       vim
+      yadm
+      yubikey-manager
+      zip
+
+      # Applications.
+      barrier
+      google-chrome
+      kitty
+      lowdown
+      pqiv
+      python3
+
+      # Wayland stuff.
+      grim
+      slop
+      slurp
       wf-recorder
-      zig
-      zk
     ];
   };
 }

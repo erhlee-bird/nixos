@@ -6,7 +6,8 @@
     # gui
     dunst.enable = true;
     eww.enable = true;
-    hyprland.enable = false;
+    hyprland.enable = true;
+    kanshi.enable = true;
     wofi.enable = true;
 
     # cli
@@ -15,7 +16,7 @@
     gpg.enable = true;
 
     # system
-    xdg.enable = true;
     packages.enable = true;
+    xdg.enable = true;
   };
 }

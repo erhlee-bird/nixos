@@ -12,6 +12,7 @@
     acpi
     git
     jq
+    killall
     nixfmt
     ripgrep
     tlp
@@ -43,18 +44,6 @@
       terminus_font
       terminus_font_ttf
     ];
-  };
-
-  # Wayland stuff: enable XDG integration, allow sway to use brillo
-  xdg = {
-    portal = {
-      enable = true;
-      extraPortals = with pkgs; [
-        xdg-desktop-portal-wlr
-        xdg-desktop-portal-gtk
-      ];
-      gtkUsePortal = true;
-    };
   };
 
   # Nix settings, auto cleanup and enable flakes
@@ -133,7 +122,7 @@
     DISABLE_QT5_COMPAT = "0";
   };
 
-  # Security 
+  # Security
   security = {
     sudo.enable = true;
 
@@ -142,26 +131,43 @@
   };
 
   # Sound
-  sound = { enable = true; };
-
-  hardware.pulseaudio.enable = true;
+  sound = { enable = false; };
   security.rtkit.enable = true;
-
   services.pipewire = {
-    enable = false;
+    enable = true;
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
+
+    wireplumber.configPackages = [
+      (pkgs.writeTextDir "share/wireplumber/bluetooth.lua.d/51-bluez-config.lua" ''
+        bluez_monitor.properties = {
+          ["bluez5.enable-sbc-xq"] = true,
+          ["bluez5.enable-msbc"] = true,
+          ["bluez5.enable-hw-volume"] = true,
+          ["bluez5.headset-roles"] = "[ hsp_hs hsp_ag hfp_hf hfp_ag ]"
+        }
+      '')
+    ];
   };
 
-  # Disable bluetooth, enable pulseaudio, enable opengl (for Wayland)
   hardware = {
     bluetooth.enable = true;
+    bluetooth.powerOnBoot = true;
+    # Show battery charge of bluetooth devices.
+    bluetooth.settings = {
+      General = {
+        Experimental = true;
+      };
+    };
+
     opengl = {
       enable = true;
       driSupport = true;
     };
   };
+
+  services.blueman.enable = true;
 
   # Do not touch
   system.stateVersion = "20.09";

@@ -10,18 +10,17 @@
       updater.enable = true;
     };
 
-    xserver = {
+    greetd = {
       enable = true;
-      displayManager.sddm = {
-        enable = true;
-        settings = {
-          # Session = "hyprland";
-          # User = "ebird";
+      restart = false;
+      settings = rec {
+        initial_session = {
+          command = "${pkgs.hyprland}/bin/Hyprland";
+          user = "ebird";
         };
-        wayland.enable = true;
+        default_session = initial_session;
       };
     };
 
   };
-
 }
