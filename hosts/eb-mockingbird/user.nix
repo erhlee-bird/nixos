@@ -4,7 +4,7 @@
   imports = [ ../../modules/default.nix ];
   config.modules = {
     # gui
-    dunst.enable = true;
+    dunst.enable = false;
     eww.enable = true;
     hyprland.enable = true;
     kanshi.enable = false;

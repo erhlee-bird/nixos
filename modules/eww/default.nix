@@ -6,7 +6,13 @@ in {
 
   config = mkIf cfg.enable {
     # eww package
-    home.packages = with pkgs; [ brightnessctl eww lua pamixer ];
+    home.packages = with pkgs; [
+      brightnessctl
+      eww
+      lua
+      networkmanager_dmenu
+      wireplumber
+    ];
 
     # configuration
     home.file.".config/eww/eww.scss".source = ./eww.scss;
@@ -52,6 +58,8 @@ in {
           #!/usr/bin/env bash
 
           export PATH="$PATH:/etc/profiles/per-user/$USER/bin:/run/current-system/sw/bin/";
+          export EWW_BASE="eww -c $HOME/.config/eww"
+          export EWW_SCRIPTS="$HOME/.config/eww/scripts"
 
           exec eww daemon -c $HOME/.config/eww --no-daemonize
         ''}";

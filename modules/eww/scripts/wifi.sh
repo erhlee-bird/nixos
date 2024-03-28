@@ -1,12 +1,23 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
-if iwctl station wlan0 show | grep -q "connected"; then
-    icon=""
-    ssid=Amadeus
-    status="Connected to ${ssid}"
+NETWORK="$(iwctl station wlan0 show | \
+  grep "Connected network" | \
+  sed 's|Connected network||' | \
+  tr -s ' ' | \
+  sed -r 's|^[[:blank:]]+||')"
+
+if [[ -n "${NETWORK}" ]]; then
+  cat <<EOF
+{
+  "icon": "🛜",
+  "ssid": "${NETWORK}"
+}
+EOF
 else
-    icon="睊"
-    status="offline"
+  cat <<EOF
+{
+  "icon": "🌐",
+  "ssid": "offline"
+}
+EOF
 fi
-
-echo "{\"icon\": \"${icon}\", \"status\": \"${status}\"}" 

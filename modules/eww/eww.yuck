@@ -1,324 +1,234 @@
-(defwidget bar []
-  (centerbox
-    :orientation "v"
-    :hexpand false
-    (box
-      :valign "start"
-      :hexpand false
-      :vexpand true
-      :orientation "v"
-      :space-evenly false
-      (launch)
-      (dashbutton)
-      (powerbutton)
-    )
+;; -----------------------------------------------------------------------------
+;; Variables.
+;; -----------------------------------------------------------------------------
 
-    (workspaces
-      :halign "center"
-      :vexpand true
-      :hexpand false
-      :orientation "v")
+(defpoll battery :interval "15s" "./scripts/battery.sh --bat")
+(defpoll battery_status :interval "1m" "./scripts/battery.sh --bat-st")
+(defpoll brightness_percent :interval "10s" "brightnessctl -m | cut -d ',' -f 4 | tr -d '%'")
+(defpoll calendar_day :interval "4h" "date '+%d'")
+(defpoll calendar_year :interval "24h" "date '+%Y'")
+(defpoll clock_time :interval "1m" "date +\%I")
+(defpoll clock_minute :interval "5s" "date +\%M")
+(defpoll clock_date :interval "4h" "date '+%F'")
+(defpoll volume_percent :interval "3s" "wpctl get-volume @DEFAULT_AUDIO_SINK@ | cut -d . -f 2")
+(defvar show_brightness_widget false)
+(defvar show_clock_widget false)
+(defvar show_volume_widget false)
+(defvar show_wifi_widget false)
+(deflisten workspace "./scripts/workspaces.sh")
 
-    (box
-      :valign "end"
-      :hexpand false
-      :vexpand true
-      :orientation "v"
-      :space-evenly false
-      (battery)
-      (wifi)
-      (mem :thickness 4 :icon "")
-      (cpu :thickness 4 :icon "")
-      (disk :thickness 4 :icon "")
-      (time)
-    )
-  )
-)
+;; (defpoll COL_WLAN :interval "1m" "./scripts/wifi --COL")
+(defpoll wlan_ssid :interval "1m" "./scripts/wifi.sh | jq -r .ssid")
+(defpoll wlan_icon :interval "1m" "./scripts/wifi.sh | jq -r .icon")
 
-(defpoll brightness
-  :interval "999h"
-  :initial 0
-  `brightnessctl -m | awk -F, '{print substr($4, 0, length($4)-1)}'`)
-(defpoll volume
-  :interval "999h"
-  :initial 0
-  `pamixer --get-volume`)
-(defpoll micvolume
-  :interval "999h"
-  :initial 0
-  `pamixer --get-volume --source 1`)
-(defwidget dashboard []
-  (box :orientation "v"
-    (box :class "info_box" :orientation "v" :space-evenly false
-      (box :class "calendar_box"
-        (calendar :width 200 :class "cal")
-      )
+(defvar eww "eww -c $HOME/.config/eww")
+(defvar eww_scripts "$HOME/.config/eww/scripts")
 
-      (box :class "slider_box" :orientation "v" :vexpand false :hexpand false
-        (box :space-evenly false
-            (label :class "slider_icon" :text "")
-            (scale :min 1 :max 101 :width 315 :class "brightness_slider" :value brightness :onchange "brightnessctl set {}%" :height 10)
-        )
-        (box :space-evenly false
-          (label :class "slider_icon" :text "墳")
-          (scale :min 1 :max 101 :width 315 :class "volume_slider" :value volume :onchange "pamixer --set-volume $(echo {} | sed 's/[.].*$//')")
-        )
-        (box :space-evenly false
-          (label :class "slider_icon" :text "")
-          (scale :min 1 :max 101 :width 315 :class "micvolume_slider" :value micvolume :onchange "pamixer --set-volume $(echo {} | sed 's/[.].*$//') --source 1")
-        )
-      )
-      (box :class "sysinfo_box" :orientation "h" :vexpand true :spacing 15
-        (mem :thickness 12 :icon "")
-        (cpu :thickness 12 :icon "")
-        (disk :thickness 12 :icon "")
-      )
-    )
-    (box :class "notification_box"
-    )
-  )
-)
+;; -----------------------------------------------------------------------------
+;; Widgets.
+;; -----------------------------------------------------------------------------
 
+(defwidget widget-battery
+           []
+           (box
+            :class "battery-widget"
+            :hexpand "false"
+            :vexpand "false"
+            (circular-progress
+             :class "battery-bar"
+             :thickness 4
+             :value battery
+             (button
+              :class "battery-icon"
+              ;; :limit-width 2
+              :onclick "${eww_scripts}/pop system"
+              ;; :show-truncated false
+              :tooltip "battery on ${battery}%"
+              ""))))
 
+(defwidget widget-brightness []
+           (eventbox
+            :onhover "${eww} update show_brightness_widget=true"
+            :onhoverlost "${eww} update show_brightness_widget=false"
+            (box
+             :class "brightness-widget"
+             :orientation "h"
+             :space-evenly "false"
+             :spacing "3"
+             (label
+              :text "🔆"
+              :class "icon"
+              :tooltip "brightness at ${brightness_percent}%")
+             (revealer
+              :transition "slideleft"
+              :reveal show_brightness_widget
+              :duration "350ms"
+              (scale
+               :class "brightness-bar"
+               :max 100
+               :min 0
+               :onchange "brightnessctl set {}%"
+               :orientation "h"
+               :tooltip "${brightness_percent}%"
+               :value brightness_percent)))))
 
+(defwidget widget-clock []
+           (eventbox
+            :onhover "${eww} update show_clock_widget=true"
+            :onhoverlost "${eww} update show_clock_widget=false"
+            (box
+             :class "clock-widget"
+             :orientation "h"
+             :space-evenly "false"
+             :spacing "3"
+             (label
+              :class "clock-time"
+              :text clock_time)
+             (label
+              :class "clock-time-sep"
+              :text ":")
+             (label
+              :class "clock-minute-class"
+              :text clock_minute)
+             (revealer
+              :duration "350ms"
+              :reveal show_clock_widget
+              :transition "slideleft"
+              (button
+               :class "clock-date"
+               :onclick "${eww_scripts}/pop calendar" clock_date)))))
 
-;; Variables
-(defvar time false)
-(defvar cal false)
+(defwidget widget-separator []
+           (box
+            :class "module-2"
+            :hexpand "false"
+            :vexpand "false"
+            (label
+             :class "separator"
+             :text "|")))
 
-;; ━━━ WIDGETS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(defwidget widget-volume []
+           (eventbox
+            :onhover "${eww} update show_volume_widget=true"
+            :onhoverlost "${eww} update show_volume_widget=false"
+            (box
+             :class "volume-widget"
+             :orientation "h"
+             :space-evenly "false"
+             :spacing "3"
+             (button
+              :class "icon"
+              :onclick "${eww_scripts}/pop volume"
+              "🔊")
+             (revealer
+              :duration "350ms"
+              :reveal show_volume_widget
+              :transition "slideleft"
+              (scale
+               :class "volume-bar"
+               :max 100
+               :min 0
+               :onchange "wpctl set-volume @DEFAULT_AUDIO_SINK@ {}%"
+               :orientation "h"
+               :tooltip "${volume_percent}%"
+               :value volume_percent)))))
 
-;; ━━━ MEMORY ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-(defwidget dashbutton[]
-  (button :class "reg-btn dashbutton" :onclick "eww open dashboard --toggle" "舘")
-)
+(defwidget widget-wifi []
+           (eventbox
+            :onhover "${eww} update show_wifi_widget=true"
+            :onhoverlost "${eww} update show_wifi_widget=false"
+            (box
+             :class "wifi-widget"
+             :hexpand "false"
+             :vexpand "false"
+             :space-evenly "false"
+             (button
+              :class "icon"
+              ;; :limit-width 12
+              :onclick "networkmanager_dmenu"
+              ;; :style "color: ${COL_WLAN};"
+              ;; :wrap "false"
+              wlan_icon)
+             (revealer
+              :duration "350ms"
+              :reveal show_wifi_widget
+              :transition "slideright"
+              (label
+               :class "wifi-bar"
+               ;; :orientation "h"
+               :text wlan_ssid)))))
 
+(defwidget widget-workspaces []
+           (literal :content workspace))
 
+;; Container widgets.
 
-;; ━━━ MEMORY ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-(defwidget mem [icon thickness]
-  (box :vexpand "false" :hexpand "false"
-    (circular-progress  :value {EWW_RAM.used_mem_perc}
-                        :class "membar"
-                        :thickness {thickness}
-                        :start-at 75
+(defwidget widgets-left []
+           (box
+            :class "widgets-left"
+            :halign "start"
+            :orientation "h"
+            :space-evenly false
+            (widget-workspaces)))
 
-        (label :class "iconmem" :text {icon})
-    )
-  )
-)
+(defwidget widgets-right []
+           (box
+            :class "widgets-right"
+            :halign "end"
+            :orientation "h"
+            :space-evenly false
+            (widget-brightness)
+            (widget-volume)
+            (widget-wifi)
+            (widget-separator)
+            (widget-battery)
+            (widget-separator)
+            (widget-clock)))
 
-;; ━━━ CPU ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-(defwidget cpu [icon thickness]
-  (box :vexpand "false" :hexpand "false"
-    (circular-progress  :value {EWW_CPU.avg}
-                        :class "cpubar"
-                        :thickness {thickness}
-                        :start-at 75
+(defwidget widget-bar []
+           (box
+            :class "widgets-bar"
+            :orientation "h"
+            (widgets-left)
+            (widgets-right)))
 
-      (label :class "iconcpu" :text {icon})
-    )
-  )
-)
+;; -----------------------------------------------------------------------------
+;; Windows.
+;; -----------------------------------------------------------------------------
 
-;; ━━━ DISK ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-(defwidget disk [icon thickness]
-  (box :vexpand "false" :hexpand "false"
-    (circular-progress  :value {EWW_DISK["/"].used_perc}
-                        :class "diskbar"
-                        :thickness {thickness}
-                        :start-at 75
-      (label :class "icondisk" :text {icon})
-
-    )
-  )
-)
-
-
-;; ━━━ WIFI ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-(defvar wifi "{}")
-(defpoll wifip :interval "30s" "./scripts/wifi.sh")
-
-(defwidget wifi []
- (box :vexpand false :hexpand false :orientation "v"
-   (label :text {wifi.icon}
-          :limit-width 10
-          :tooltip {wifi.status}
-          :class "wifi"
-    )
-  )
-)
-
-;; ━━━ BATTERY ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-(defvar battery "{}")
-(defpoll batteryp :interval "60s" "./scripts/battery.sh")
-
-(defwidget battery []
-   (label :text {battery.icon}
-          :limit-width 10
-          :tooltip "${battery.status}: ${battery.percent}"
-          :class "battery"
-  )
-)
-
-
-;; ━━━ VOLUME ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-(defvar volume-level 50)
-(defvar volume-muted false)
-
-(defwindow volume
-  :monitor 0
-  :geometry (geometry :y "100px" :x "0px" :width "250px" :height "200px" :anchor "center bottom")
-  :windowtype "dock"
-  :wm-ignore true
-  :stacking "fg"
-
-  (box :class "volume-window"
-       :orientation "v"
-       :space-evenly "false"
-    (box :class "volume-widget"
-         :orientation "h"
-         :space-evenly false
-         :spacing 10
-      (label :text {volume-muted ? "" :
-                    volume-level == 0 ? "" :
-                    volume-level < 32 ? "" :
-                    volume-level < 65 ? "" :
-                    ""}
-
-             :class 'volume-icon ${volume-muted ? "volume-icon-muted" : ""}'
-      )
-      (scale :class 'volume-slider ${volume-muted ? "volume-slider-muted" : ""}'
-             :hexpand "true"
-             :min 0
-             :max 100
-             :height 8
-             :marks true
-             :value volume-level
-             :onchange "pamixer --set-volume {}"))))
-
-;; ━━━ TIME ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-(defpoll hour :interval "10s" "date +%H")
-(defpoll minute :interval "10s" "date +%M")
-(defpoll dateVar :interval "600s" "date '+%A %d.%m.%y'")
-
-(defwidget time []
-  (eventbox :cursor "hand"  :hexpand false :vexpand false
-                :tooltip "${dateVar}"
-    (box :orientation "v" :hexpand false :vexpand false :space-evenly false :class "clock"
-    (button		:class "date"
-                :onclick ""	"${hour}")
-
-    (button		:class "date"
-                :onclick ""	"${minute}")
-    )
-  )
-)
-
-
-
-
-(defvar bright-level 50)
-(defvar bright-muted false)
-(defwindow brightness
-  :monitor 0
-  :geometry (geometry :y "-60px" :x "60px" :width "300px" :height "150px" :anchor "bottom left")
-  :wm-ignore true
-  :stacking "fg"
-
-  (box :class "volume-window"
-       :orientation "v"
-       :space-evenly "false"
-    (box :class "volume-widget"
-         :orientation "h"
-         :space-evenly false
-         :spacing 10
-      (label :text ""
-             :class 'volume-icon'
-      )
-      (scale :class 'volume-slider'
-             :hexpand "true"
-             :min 0
-             :max 100
-             :height 8
-             :marks true
-             :value bright-level
-             :onchange "brightnessctl set {}%"))))
-(defwidget launch []
-  (button		:class "reg-btn launchbutton"
-                :hexpand true
-                :onclick "wofi --show run --xoffset=1670 --yoffset=12 --width=230px --height=984 --style=$HOME/.config/wofi.css --term=footclient --prompt=Run &" "")
-)
-
-(defwidget powerbutton []
-  (eventbox :cursor "hand"
-  (button		:class "reg-btn powerbutton"
-                :onclick "eww open powermenu --toggle &"	"")
-  )
-)
-                                                  (defwidget powermenucontent []
-                                                  (box :orientation "h"
-  :class "powermenu-container"
-  (box :class "shutdown-btn-box"
-       :orientation "h"
-    (button :class "btn"
-            :tooltip "Shutdown"
-            :onclick "eww close powermenu && shutdown now"
-      "⏻")
-    )
-  (box :class "reboot-btn-box"
-       :orientation "h"
-    (button :class "btn"
-            :tooltip "Reboot"
-            :onclick "eww close powermenu && reboot"
-      "")
-    )
-  (box :class "exit-btn-box"
-       :orientation "h"
-    (button :class "btn"
-            :tooltip "Suspend"
-            :onclick "systemctl suspend"
-      "")
-    )
-  )
-)
-
-(defwindow powermenu
-  :monitor 0
-  :geometry (geometry :x "0%"
-  :y "0%"
-  :width "30%"
-  :height "15%"
-  :anchor "center center")
-  :wm-ignore true
-  (powermenucontent))
-
-; (deflisten workspaces_listen "./scripts/workspaces.sh")
-; (defwidget workspaces []
-;   (literal :content workspaces_listen))
-
-(defwindow dashboard
-  :monitor 0
-  :geometry (geometry
-  :height "1080px"
-  :width "350px"
-  :x "48px"
-  :y "0px"
-  :anchor "top left")
-  :stacking "fg"
-  :class "dashboard"
-  (dashboard))
+;; (defwindow audio_ctl
+;;            :geometry (geometry :x "-20px"
+;;                                :y "7%"
+;;                                :anchor "top right"
+;;                                :width "280px"
+;;                                :height "60px")
+;;            (audio))
 
 (defwindow bar
-  :monitor 0
-  :windowtype "dock"
-  :geometry (geometry :height "100%"
-                      :width "64px"
-                      :x "-4px"
-                      :y "0px"
-                      :exclusive false
-                      :anchor "top left")
-  :stacking "fg"
-  :reserve (struts :side "top" :distance "2%")
-  (bar))
+           :geometry (geometry :x "0%"
+                               :y "0%"
+                               :width "100%"
+                               :height "50px"
+                               :anchor "top center")
+           :monitor 2
+           :reserve (struts :distance "50px" :side "top")
+           :stacking "fg"
+           :windowtype "dock"
+           :wm-ignore false
+           (widget-bar))
+
+;; (defwindow calendar
+;;            :geometry (geometry :x "-20px"
+;;                                :y "7%"
+;;                                :anchor "top right"
+;;                                :width "270px"
+;;                                :height "60px")
+;;            (cal))
+
+;; (defwindow system
+;;            :geometry (geometry :x "-20px"
+;;                                :y "7%"
+;;                                :anchor "top right"
+;;                                :width "290px"
+;;                                :height "120px")
+;;            (system))
