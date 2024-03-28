@@ -7,7 +7,7 @@
     dunst.enable = true;
     eww.enable = true;
     hyprland.enable = true;
-    kanshi.enable = true;
+    kanshi.enable = false;
     wofi.enable = true;
 
     # cli

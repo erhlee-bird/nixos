@@ -6,8 +6,8 @@
   # NB: Can we automatically discover all of the sibling `.nix` files?
   imports = [
     # gui
-    ./eww
     ./dunst
+    ./eww
     ./hyprland
     ./kanshi
     ./wofi

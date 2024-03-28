@@ -1,0 +1,5 @@
+[pyprland]
+plugins = [
+  "fetch_client_menu",
+  "workspaces_follow_focus"
+]

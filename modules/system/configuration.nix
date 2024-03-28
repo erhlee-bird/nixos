@@ -10,9 +10,11 @@
   # Laptop-specific packages (the other ones are installed in `packages.nix`)
   environment.systemPackages = with pkgs; [
     acpi
+    file
     git
     jq
     killall
+    magic-wormhole
     nixfmt
     ripgrep
     tlp
@@ -23,8 +25,12 @@
   fonts = {
     fontconfig = {
       hinting.autohint = true;
-      defaultFonts = { emoji = [ "OpenMoji Color" ]; };
+      # defaultFonts = {
+      # emoji = [ "OpenMoji Color" ];
+      # };
     };
+
+    fontDir.enable = true;
 
     packages = with pkgs; [
       corefonts
@@ -33,10 +39,13 @@
       freefont_ttf
       google-fonts
       inconsolata
+      jetbrains-mono
+      (nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
       noto-fonts
       noto-fonts-cjk
       noto-fonts-emoji
       openmoji-color
+      papirus-icon-theme
       roboto
       siji
       source-code-pro
@@ -139,15 +148,17 @@
     alsa.support32Bit = true;
     pulse.enable = true;
 
+    wireplumber.enable = true;
     wireplumber.configPackages = [
-      (pkgs.writeTextDir "share/wireplumber/bluetooth.lua.d/51-bluez-config.lua" ''
-        bluez_monitor.properties = {
-          ["bluez5.enable-sbc-xq"] = true,
-          ["bluez5.enable-msbc"] = true,
-          ["bluez5.enable-hw-volume"] = true,
-          ["bluez5.headset-roles"] = "[ hsp_hs hsp_ag hfp_hf hfp_ag ]"
-        }
-      '')
+      (pkgs.writeTextDir
+        "share/wireplumber/bluetooth.lua.d/51-bluez-config.lua" ''
+          bluez_monitor.properties = {
+            ["bluez5.enable-sbc-xq"] = true,
+            ["bluez5.enable-msbc"] = true,
+            ["bluez5.enable-hw-volume"] = true,
+            ["bluez5.headset-roles"] = "[ hsp_hs hsp_ag hfp_hf hfp_ag ]"
+          }
+        '')
     ];
   };
 
@@ -155,16 +166,16 @@
     bluetooth.enable = true;
     bluetooth.powerOnBoot = true;
     # Show battery charge of bluetooth devices.
-    bluetooth.settings = {
-      General = {
-        Experimental = true;
-      };
-    };
+    bluetooth.settings = { General = { Experimental = true; }; };
 
     opengl = {
       enable = true;
       driSupport = true;
     };
+
+    pulseaudio.extraConfig = ''
+      load-module module-switch-on-connect
+    '';
   };
 
   services.blueman.enable = true;

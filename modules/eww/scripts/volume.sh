@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if eww windows | rg -q "\*volume"; then
+if eww list-windows | rg -q "\*volume"; then
     eww update volume-level=$(pamixer --get-volume)
     eww update volume-muted=$(pamixer --get-mute)
     eww update volume-hidden=false

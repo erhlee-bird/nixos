@@ -1,8 +1,13 @@
 { config, lib, pkgs, modulesPath, ... }:
 
 {
+  environment.systemPackages = with pkgs; [
+    xfce.xfce4-notifyd
+  ];
 
-  environment.systemPackages = with pkgs; [ hyprland ];
+  programs = {
+    hyprland.enable = true;
+  };
 
   services = {
     clamav = {
@@ -15,12 +20,14 @@
       restart = false;
       settings = rec {
         initial_session = {
-          command = "${pkgs.hyprland}/bin/Hyprland";
+          command = "dbus-run-session ${pkgs.hyprland}/bin/Hyprland";
           user = "ebird";
         };
         default_session = initial_session;
       };
     };
-
   };
+
+  xdg.portal.enable = true;
+  xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
 }

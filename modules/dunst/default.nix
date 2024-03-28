@@ -12,7 +12,7 @@ in {
       enable = true;
       settings = {
         global = {
-          origin = "top-left";
+          origin = "top-right";
           offset = "60x12";
           separator_height = 2;
           padding = 12;

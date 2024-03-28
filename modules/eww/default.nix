@@ -5,16 +5,8 @@ in {
   options.modules.eww = { enable = mkEnableOption "eww"; };
 
   config = mkIf cfg.enable {
-    # theres no programs.eww.enable here because eww looks for files in .config
-    # thats why we have all the home.files
-
     # eww package
-    home.packages = with pkgs; [
-      eww
-      pamixer
-      brightnessctl
-      (nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
-    ];
+    home.packages = with pkgs; [ brightnessctl eww lua pamixer ];
 
     # configuration
     home.file.".config/eww/eww.scss".source = ./eww.scss;
@@ -26,13 +18,13 @@ in {
       executable = true;
     };
 
-    home.file.".config/eww/scripts/wifi.sh" = {
-      source = ./scripts/wifi.sh;
+    home.file.".config/eww/scripts/brightness.sh" = {
+      source = ./scripts/brightness.sh;
       executable = true;
     };
 
-    home.file.".config/eww/scripts/brightness.sh" = {
-      source = ./scripts/brightness.sh;
+    home.file.".config/eww/scripts/wifi.sh" = {
+      source = ./scripts/wifi.sh;
       executable = true;
     };
 
@@ -44,6 +36,28 @@ in {
     home.file.".config/eww/scripts/workspaces.lua" = {
       source = ./scripts/workspaces.lua;
       executable = true;
+    };
+
+    systemd.user.services.eww = {
+      Unit = {
+        Description = "Run the eww daemon.";
+        Requires = [ "graphical-session.target" ];
+      };
+
+      Install = { WantedBy = [ "default.target" ]; };
+
+      Service = {
+        Type = "simple";
+        ExecStart = "${pkgs.writeShellScript "eww.sh" ''
+          #!/usr/bin/env bash
+
+          export PATH="$PATH:/etc/profiles/per-user/$USER/bin:/run/current-system/sw/bin/";
+
+          exec eww daemon -c $HOME/.config/eww --no-daemonize
+        ''}";
+        Restart = "always";
+        RestartSec = 5;
+      };
     };
   };
 }
