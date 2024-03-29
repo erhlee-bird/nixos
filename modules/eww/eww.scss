@@ -1,45 +1,38 @@
 $base: #200d72;
+$text: #bfc9db;
 
 * {
   all: unset;
-  font-family: Source Code Pro;
+  font-family: Inconsolata;
+}
+
+scale trough {
+  all: unset;
+  box-shadow: 0 2px 3px 2px #06060b;
+  border-radius: 16px;
+  min-height: 10px;
+  min-width: 72px;
 }
 
 tooltip.background {
   background-color: $base;
   border-radius: 10px;
-  color: #bfc9db;
+  color: $text;
   font-size: 1.5rem;
   font-weight: 500;
 }
 
 tooltip label {
-    margin: 6px;
-}
-
-/** Widgets **/
-
-.membar {
-  color: #e0b089;
-    background-color: #38384d;
-  border-radius: 10px;
-}
-
-.iconmem {
-    color: #e0b089;
+  margin: 6px;
 }
 
 // -----------------------------------------------------------------------------
 // Widgets.
 // -----------------------------------------------------------------------------
 
-.battery-icon {
-  margin: 0rem 2rem;
-}
-
-.battery-widget {
-  border-radius: 16px;
-  color: #afbea2;
+.battery-bar trough highlight {
+  background-image: linear-gradient(to right, rgba(246,68,68,1) 5%, rgba(254,255,0,1) 60%, rgba(13,244,51,1) 100%);
+  border-radius: 10px;
 }
 
 .brightness-bar trough highlight {
@@ -52,22 +45,21 @@ tooltip label {
 }
 
 .clock-widget {
-  color: #bfc9db;
   font-size: 2rem;
   font-weight: 600;
   margin: 0px 0.5rem;
 }
 
-.clock-date {
-  font-size: 1.5rem;
-  font-weight: 400;
-  margin-left: 0.5rem;
-}
-
 .icon {
   font-size: 1.5rem;
-  margin-left: 0.2rem;
+  margin-left: 4px;
   margin-right: 0.5rem;
+}
+
+.revealed {
+  font-size: 1.5rem;
+  font-weight: 400;
+  margin-left: 0.2rem;
 }
 
 .separator {
@@ -88,93 +80,55 @@ tooltip label {
 
 .widgets-bar {
   background-color: $base;
+  border-radius: 16px;
+  padding: 0px 12px;
+}
+
+.widgets-left {
+  font-family: monospace;
+  font-size: 2rem;
+  font-weight: normal;
+}
+
+.widgets-left > * {
+  margin: 0rem 0.5rem;
 }
 
 .widgets-right > * {
+  color: $text;
   margin: 0rem 0.5rem;
 }
 
 .wifi-widget {
   color: #a1bdce;
   border-radius: 100%;
-  font-size: 1.5rem;
-  font-weight: 500;
 }
 
-.mem_module {
-    background-color: #0f0f17;
-	border-radius: 16px;
-  margin: 0px 10px 0px 3px;
-  }
-
-scale trough {
-  all: unset;
-  background-color: #22242b;
-  box-shadow: 0 2px 3px 2px #06060b;
-  border-radius: 16px;
-  min-height: 10px;
-  min-width: 70px;
-  margin: 0px 10px 0px 0px;
-}
-
-.workspaces {
-font-size: 27px;
-font-weight: normal;
-margin: 5px 0px 0px 20px;
-background-color: #0f0f17;
-}
-
-// .0 , .01, .02, .03, .04, .05, .06,
-// .011, .022, .033, .044, .055, .066{
-  // margin: 0px 10px 0px 0px;
-// }
+// -----------------------------------------------------------------------------
+// Workspaces.
+// -----------------------------------------------------------------------------
 
 /* Unoccupied */
-// .0 {
-// color: #3e424f;
-// }
+.w0 {
+  color: $text;
+  opacity: 0.5;
+}
 
 /* Occupied */
-// .01, .02, .03, .04, .05, .06 {
-  // color: #bfc9db;
-// }
+.w01, .w02, .w03, .w04, .w05, .w06, .w07, .w08, .w09 {
+  color: white;
+}
 
 /* Focused */
-// .011, .022, .033, .044, .055, .066 {
-  // color: #a1bdce;
-// }
-
-
-.song_cover_art {
-	background-size: cover;
-	background-position: center;
-	min-height: 24px;
-	min-width: 24px;
-	margin: 10px;
-	border-radius: 100px;
+.w011, .w022, .w033, .w044, .w055, .w066, .w077, .w088, .w099 {
+  color: orange;
+  font-weight: bold;
 }
 
-.song {
-	color: #a1bdce;
-	font-size : 18px;
-	font-weight : bold;
-	margin : 3px 5px 0px 0px;
+.workspace button:hover {
+  box-shadow: inset 0px -3px #fff;
 }
 
-.song_btn_play {
-	color: #a1bdce;
-	font-size : 28px;
-	margin : 3px 0px 0px 5px;
-
-}
-
-
-.song_btn_prev, .song_btn_next {
-	color: #bfc9db;
-	font-size : 24px;
-	margin : 3px 0px 0px 5px;
-
-}
 // Calendar
 .cal {
   background-color: #0f0f17;
@@ -230,21 +184,21 @@ color: #bfc9db;
 
 .sys_sep {
     color: #38384d;
-    font-size: 18;
+    font-size: 18px;
     margin: 0px 10px 0px 10px;
 }
 .sys_text_bat_sub, .sys_text_mem_sub {
-    font-size: 16;
+    font-size: 16px;
     color: #bbc5d7;
     margin: 5px 0px 0px 25px;
 }
 .sys_text_bat, .sys_text_mem {
-    font-size: 21;
+    font-size: 21px;
     font-weight: bold;
     margin: 14px 0px 0px 25px;
 }
 .sys_icon_bat, .sys_icon_mem {
-    font-size: 30;
+    font-size: 30px;
     margin: 30px;
 }
 .sys_win {
@@ -409,7 +363,7 @@ color: #bfc9db;
 }
 .mic_bar scale trough {
 	all: unset;
-    box-shadow: 0 6px 5px 2px #06060b;
+    box-shadow: 0px 6px 5px 2px #06060b;
 	background-color: #232232;
 	border-radius: 24px;
 	min-height: 13px;
@@ -419,6 +373,6 @@ color: #bfc9db;
 
 .audio_sep {
     color: #38384d;
-    font-size: 18;
+    font-size: 18px;
 	margin : 0px 0px 0px 0px;
 }

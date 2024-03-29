@@ -2,27 +2,33 @@
 ;; Variables.
 ;; -----------------------------------------------------------------------------
 
-(defpoll battery :interval "15s" "./scripts/battery.sh --bat")
-(defpoll battery_status :interval "1m" "./scripts/battery.sh --bat-st")
-(defpoll brightness_percent :interval "10s" "brightnessctl -m | cut -d ',' -f 4 | tr -d '%'")
+(defpoll battery_percent
+         :initial 0
+         :interval "15s"
+         "./scripts/battery.sh | jq -r .value")
+(defpoll brightness_percent
+         :initial 0
+         :interval "10s"
+         "brightnessctl -m | cut -d ',' -f 4 | tr -d '%'")
 (defpoll calendar_day :interval "4h" "date '+%d'")
 (defpoll calendar_year :interval "24h" "date '+%Y'")
-(defpoll clock_time :interval "1m" "date +\%I")
+(defpoll clock_time :interval "1m" "date +\%H")
 (defpoll clock_minute :interval "5s" "date +\%M")
-(defpoll clock_date :interval "4h" "date '+%F'")
-(defpoll volume_percent :interval "3s" "wpctl get-volume @DEFAULT_AUDIO_SINK@ | cut -d . -f 2")
+(defpoll clock_date :interval "4h" "date '+%A %F'")
+(defpoll volume_percent
+         :initial 0
+         :interval "1s" "wpctl get-volume @DEFAULT_AUDIO_SINK@ | cut -d . -f 2")
+(defpoll wifi_ssid :interval "1m" "./scripts/wifi.sh | jq -r .ssid")
+(defpoll wifi_icon :interval "1m" "./scripts/wifi.sh | jq -r .icon")
+
+(defvar eww "eww -c $HOME/.config/eww")
+(defvar eww_scripts "$HOME/.config/eww/scripts")
 (defvar show_brightness_widget false)
 (defvar show_clock_widget false)
 (defvar show_volume_widget false)
 (defvar show_wifi_widget false)
-(deflisten workspace "./scripts/workspaces.sh")
 
-;; (defpoll COL_WLAN :interval "1m" "./scripts/wifi --COL")
-(defpoll wlan_ssid :interval "1m" "./scripts/wifi.sh | jq -r .ssid")
-(defpoll wlan_icon :interval "1m" "./scripts/wifi.sh | jq -r .icon")
-
-(defvar eww "eww -c $HOME/.config/eww")
-(defvar eww_scripts "$HOME/.config/eww/scripts")
+(deflisten workspace "./scripts/workspaces.sh 2")
 
 ;; -----------------------------------------------------------------------------
 ;; Widgets.
@@ -32,19 +38,16 @@
            []
            (box
             :class "battery-widget"
-            :hexpand "false"
-            :vexpand "false"
-            (circular-progress
+            :space-evenly "false"
+            :spacing "3"
+            (scale
              :class "battery-bar"
-             :thickness 4
-             :value battery
-             (button
-              :class "battery-icon"
-              ;; :limit-width 2
-              :onclick "${eww_scripts}/pop system"
-              ;; :show-truncated false
-              :tooltip "battery on ${battery}%"
-              ""))))
+             :max 100
+             :min 0
+             :orientation "h"
+             :tooltip "battery: ${battery_percent}%"
+             :valign "center"
+             :value battery_percent)))
 
 (defwidget widget-brightness []
            (eventbox
@@ -56,7 +59,7 @@
              :space-evenly "false"
              :spacing "3"
              (label
-              :text "🔆"
+              :text "󰃟"
               :class "icon"
               :tooltip "brightness at ${brightness_percent}%")
              (revealer
@@ -88,24 +91,23 @@
               :class "clock-time-sep"
               :text ":")
              (label
-              :class "clock-minute-class"
+              :class "clock-minute"
               :text clock_minute)
              (revealer
               :duration "350ms"
               :reveal show_clock_widget
               :transition "slideleft"
               (button
-               :class "clock-date"
+               :class "revealed"
                :onclick "${eww_scripts}/pop calendar" clock_date)))))
 
 (defwidget widget-separator []
            (box
-            :class "module-2"
             :hexpand "false"
             :vexpand "false"
             (label
              :class "separator"
-             :text "|")))
+             :text "")))
 
 (defwidget widget-volume []
            (eventbox
@@ -118,20 +120,28 @@
              :spacing "3"
              (button
               :class "icon"
-              :onclick "${eww_scripts}/pop volume"
-              "🔊")
+              :onclick "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+              "󰕾")
              (revealer
               :duration "350ms"
               :reveal show_volume_widget
               :transition "slideleft"
-              (scale
-               :class "volume-bar"
-               :max 100
-               :min 0
-               :onchange "wpctl set-volume @DEFAULT_AUDIO_SINK@ {}%"
+              (box
                :orientation "h"
-               :tooltip "${volume_percent}%"
-               :value volume_percent)))))
+               :space-evenly "false"
+               :spacing "3"
+               (label
+                :class "revealed"
+                :style "margin-right: 4px"
+                :text "${volume_percent}%")
+               (scale
+                :class "volume-bar"
+                :max 100
+                :min 0
+                :onchange "wpctl set-volume @DEFAULT_AUDIO_SINK@ {}%"
+                :orientation "h"
+                :tooltip "${volume_percent}%"
+                :value volume_percent))))))
 
 (defwidget widget-wifi []
            (eventbox
@@ -144,22 +154,17 @@
              :space-evenly "false"
              (button
               :class "icon"
-              ;; :limit-width 12
-              :onclick "networkmanager_dmenu"
-              ;; :style "color: ${COL_WLAN};"
-              ;; :wrap "false"
-              wlan_icon)
+              wifi_icon)
              (revealer
               :duration "350ms"
               :reveal show_wifi_widget
               :transition "slideright"
               (label
-               :class "wifi-bar"
-               ;; :orientation "h"
-               :text wlan_ssid)))))
+               :class "revealed"
+               :text wifi_ssid)))))
 
 (defwidget widget-workspaces []
-           (literal :content workspace))
+           (literal :content {workspace}))
 
 ;; Container widgets.
 
@@ -169,6 +174,7 @@
             :halign "start"
             :orientation "h"
             :space-evenly false
+            :valign "center"
             (widget-workspaces)))
 
 (defwidget widgets-right []
@@ -186,10 +192,14 @@
             (widget-clock)))
 
 (defwidget widget-bar []
-           (box
+           (centerbox
             :class "widgets-bar"
             :orientation "h"
             (widgets-left)
+            (label
+             :class ""
+             :style "font-size: 1.5rem; font-weight: 700"
+             :text "erhlee.bird")
             (widgets-right)))
 
 ;; -----------------------------------------------------------------------------
@@ -205,16 +215,16 @@
 ;;            (audio))
 
 (defwindow bar
+           :exclusive true
+           :focusable false
            :geometry (geometry :x "0%"
-                               :y "0%"
-                               :width "100%"
-                               :height "50px"
+                               :y "12px"
+                               :width "99%"
+                               :height "48px"
                                :anchor "top center")
-           :monitor 2
-           :reserve (struts :distance "50px" :side "top")
+           :monitor '[2, 0]'
            :stacking "fg"
            :windowtype "dock"
-           :wm-ignore false
            (widget-bar))
 
 ;; (defwindow calendar

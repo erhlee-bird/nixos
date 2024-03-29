@@ -9,14 +9,14 @@ NETWORK="$(iwctl station wlan0 show | \
 if [[ -n "${NETWORK}" ]]; then
   cat <<EOF
 {
-  "icon": "🛜",
+  "icon": "󰤨",
   "ssid": "${NETWORK}"
 }
 EOF
 else
   cat <<EOF
 {
-  "icon": "🌐",
+  "icon": "󰤯",
   "ssid": "offline"
 }
 EOF

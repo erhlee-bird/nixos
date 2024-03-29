@@ -10,7 +10,7 @@ in {
       brightnessctl
       eww
       lua
-      networkmanager_dmenu
+      socat
       wireplumber
     ];
 
@@ -39,11 +39,6 @@ in {
       executable = true;
     };
 
-    home.file.".config/eww/scripts/workspaces.lua" = {
-      source = ./scripts/workspaces.lua;
-      executable = true;
-    };
-
     systemd.user.services.eww = {
       Unit = {
         Description = "Run the eww daemon.";
@@ -61,7 +56,7 @@ in {
           export EWW_BASE="eww -c $HOME/.config/eww"
           export EWW_SCRIPTS="$HOME/.config/eww/scripts"
 
-          exec eww daemon -c $HOME/.config/eww --no-daemonize
+          exec eww daemon -c $HOME/.config/eww --no-daemonize --debug
         ''}";
         Restart = "always";
         RestartSec = 5;

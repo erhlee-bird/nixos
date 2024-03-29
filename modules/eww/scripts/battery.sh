@@ -10,8 +10,39 @@ battery_stat() {
   cat /sys/class/power_supply/${BAT}/status || echo "unknown"
 }
 
-if [[ "$1" == "--bat" ]]; then
-  battery
-elif [[ "$1" == "--bat-st" ]]; then
-  battery_stat
+level=$(battery)
+status=$(battery_stat)
+
+if (( level > 75 )); then
+  cat <<EOF
+{
+  "icon": "",
+  "status": "${status}",
+  "value": ${level}
+}
+EOF
+elif (( level > 50 )); then
+  cat <<EOF
+{
+  "icon": "",
+  "status": "${status}",
+  "value": ${level}
+}
+EOF
+elif (( level > 25 )); then
+  cat <<EOF
+{
+  "icon": "",
+  "status": "${status}",
+  "value": ${level}
+}
+EOF
+else
+  cat <<EOF
+{
+  "icon": "",
+  "status": "${status}",
+  "value": ${level}
+}
+EOF
 fi

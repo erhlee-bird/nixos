@@ -2,6 +2,7 @@
 
 {
   nixpkgs.config.allowUnfree = true;
+  nixpkgs.config.joypixels.acceptLicense = true;
 
   # Remove unecessary preinstalled packages
   environment.defaultPackages = [ ];
@@ -23,35 +24,29 @@
 
   # Install fonts
   fonts = {
+    enableDefaultPackages = true;
+
     fontconfig = {
+      enable = true;
+      defaultFonts.emoji = [
+        "NerdFontsSymbolsOnly"
+        "JoyPixels"
+        "Noto Color Emoji"
+      ];
       hinting.autohint = true;
-      # defaultFonts = {
-      # emoji = [ "OpenMoji Color" ];
-      # };
     };
 
     fontDir.enable = true;
 
     packages = with pkgs; [
-      corefonts
-      dejavu_fonts
       font-awesome
-      freefont_ttf
-      google-fonts
       inconsolata
-      jetbrains-mono
-      (nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
+      joypixels
+      (nerdfonts.override { fonts = [ "NerdFontsSymbolsOnly" ]; })
       noto-fonts
-      noto-fonts-cjk
-      noto-fonts-emoji
-      openmoji-color
-      papirus-icon-theme
-      roboto
-      siji
+      noto-fonts-color-emoji
       source-code-pro
       source-sans-pro
-      terminus_font
-      terminus_font_ttf
     ];
   };
 

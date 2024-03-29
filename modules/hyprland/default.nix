@@ -23,27 +23,6 @@ in {
     home.file.".config/hypr/shaders/blue-light-filter.glsl".source =
       "${pkgs.hyprshade}/share/hyprshade/shaders/blue-light-filter.glsl";
 
-    systemd.user.services.hyprshade = {
-      Unit = {
-        Description = "Run the hyprshade daemon to reduce blue light.";
-        Requires = [ "graphical-session.target" ];
-      };
-
-      Install = { WantedBy = [ "default.target" ]; };
-
-      Service = {
-        Type = "simple";
-        ExecStart = "${pkgs.writeShellScript "hyprshade.sh" ''
-          #!/usr/bin/env bash
-
-          export PATH="$PATH:/etc/profiles/per-user/$USER/bin";
-          exec hyprshade auto
-        ''}";
-        Restart = "on-failure";
-        RestartSec = 5;
-      };
-    };
-
     systemd.user.services.pypr = {
       Unit = {
         Description = "Run the pypr daemon to extend Hyprland.";

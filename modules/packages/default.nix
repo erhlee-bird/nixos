@@ -8,6 +8,7 @@ in {
     home.packages = with pkgs; [
       # System utilities.
       emacs
+      entr
       fzf
       git
       git-lfs
@@ -29,6 +30,7 @@ in {
       kitty
       lowdown
       pavucontrol
+      playerctl
       pqiv
       python3
 
