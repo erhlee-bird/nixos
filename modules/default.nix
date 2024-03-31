@@ -11,6 +11,7 @@
     ./hyprland
     ./kanshi
     ./wofi
+    ./work
 
     # cli
     ./direnv

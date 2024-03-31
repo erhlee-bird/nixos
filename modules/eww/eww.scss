@@ -1,5 +1,7 @@
 $base: #200d72;
 $text: #bfc9db;
+$wsactive: #eb8258; // Mandarin
+$wsfocused: #fe654f; // Tomato
 
 * {
   all: unset;
@@ -108,26 +110,20 @@ tooltip label {
 // Workspaces.
 // -----------------------------------------------------------------------------
 
-/* Unoccupied */
-.w0 {
-  color: $text;
-  opacity: 0.5;
+.workspaces > button:hover {
+  box-shadow: inset 0px -4px #fff;
 }
 
-/* Occupied */
-.w01, .w02, .w03, .w04, .w05, .w06, .w07, .w08, .w09 {
-  color: white;
+.ws-active {
+  color: $wsactive;
 }
 
-/* Focused */
-.w011, .w022, .w033, .w044, .w055, .w066, .w077, .w088, .w099 {
-  color: orange;
+.ws-focused {
+  color: $wsfocused;
   font-weight: bold;
 }
 
-.workspace button:hover {
-  box-shadow: inset 0px -3px #fff;
-}
+.ws-occupied {}
 
 // Calendar
 .cal {

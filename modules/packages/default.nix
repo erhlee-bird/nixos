@@ -9,6 +9,7 @@ in {
       # System utilities.
       emacs
       entr
+      file
       fzf
       git
       git-lfs
@@ -17,6 +18,7 @@ in {
       jq
       libnotify
       parallel
+      p7zip
       ripgrep
       tmux
       unzip
@@ -30,9 +32,11 @@ in {
       kitty
       lowdown
       pavucontrol
+      pcmanfm
       playerctl
       pqiv
       python3
+      vlc
 
       # Wayland stuff.
       grim

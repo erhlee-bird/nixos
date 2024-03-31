@@ -10,6 +10,7 @@ in {
       brightnessctl
       eww
       lua
+      pavucontrol
       socat
       wireplumber
     ];

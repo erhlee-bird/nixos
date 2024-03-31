@@ -174,6 +174,7 @@
   };
 
   services.blueman.enable = true;
+  virtualisation.docker.enable = true;
 
   # Do not touch
   system.stateVersion = "20.09";

@@ -20,6 +20,11 @@
          :interval "1s" "wpctl get-volume @DEFAULT_AUDIO_SINK@ | cut -d . -f 2")
 (defpoll wifi_ssid :interval "1m" "./scripts/wifi.sh | jq -r .ssid")
 (defpoll wifi_icon :interval "1m" "./scripts/wifi.sh | jq -r .icon")
+(defpoll window_title
+         :interval "1s"
+         "hyprctl activeworkspace -j | jq -r '.lastwindowtitle'")
+
+(deflisten workspace "./scripts/workspaces.sh 2")
 
 (defvar eww "eww -c $HOME/.config/eww")
 (defvar eww_scripts "$HOME/.config/eww/scripts")
@@ -27,8 +32,6 @@
 (defvar show_clock_widget false)
 (defvar show_volume_widget false)
 (defvar show_wifi_widget false)
-
-(deflisten workspace "./scripts/workspaces.sh 2")
 
 ;; -----------------------------------------------------------------------------
 ;; Widgets.
@@ -111,6 +114,8 @@
 
 (defwidget widget-volume []
            (eventbox
+            :onclick "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+            :onrightclick "pavucontrol"
             :onhover "${eww} update show_volume_widget=true"
             :onhoverlost "${eww} update show_volume_widget=false"
             (box
@@ -120,7 +125,6 @@
              :spacing "3"
              (button
               :class "icon"
-              :onclick "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
               "󰕾")
              (revealer
               :duration "350ms"
@@ -197,9 +201,8 @@
             :orientation "h"
             (widgets-left)
             (label
-             :class ""
              :style "font-size: 1.5rem; font-weight: 700"
-             :text "erhlee.bird")
+             :text window_title)
             (widgets-right)))
 
 ;; -----------------------------------------------------------------------------

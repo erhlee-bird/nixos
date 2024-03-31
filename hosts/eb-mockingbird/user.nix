@@ -9,6 +9,7 @@
     hyprland.enable = true;
     kanshi.enable = false;
     wofi.enable = true;
+    work.enable = true;
 
     # cli
     direnv.enable = true;
