@@ -12,10 +12,16 @@ in {
     (modulesPath + "/installer/scan/not-detected.nix")
   ];
 
-  boot.initrd.availableKernelModules =
-    [ "nvme" "xhci_pci" "thunderbolt" "uas" "sd_mod" ];
+  boot.initrd.availableKernelModules = [
+    "nvme"
+    "xhci_pci"
+    "thunderbolt"
+    "uas"
+    "sd_mod"
+  ];
   boot.initrd.kernelModules = [ "dm-snapshot" ];
   boot.kernelModules = [ "kvm-amd" ];
+  boot.kernelParams = [ "mem_sleep_default=deep" ];
   boot.extraModulePackages = [ ];
 
   # Use the systemd-boot EFI boot loader.
@@ -43,12 +49,11 @@ in {
   swapDevices =
     [{ device = "/dev/disk/by-uuid/38bff18d-e955-49de-8e06-296c8d480a50"; }];
 
-  # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
-  # (the default) this is the recommended approach. When using systemd-networkd it's
-  # still possible to use this option, but it's recommended to use it in conjunction
-  # with explicit per-interface declarations with `networking.interfaces.<interface>.useDHCP`.
+  # Configure sleep + hibernate.
+  # https://www.worldofbs.com/nixos-framework/
+  boot.resumeDevice = "/dev/disk/by-uuid/38bff18d-e955-49de-8e06-296c8d480a50";
+
   networking.useDHCP = lib.mkDefault true;
-  # networking.interfaces.wlp1s0.useDHCP = lib.mkDefault true;
 
   services.fprintd.enable = true;
   services.fwupd.enable = true;

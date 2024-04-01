@@ -10,6 +10,7 @@
     ./eww
     ./hyprland
     ./kanshi
+    ./swaylock
     ./wofi
     ./work
 

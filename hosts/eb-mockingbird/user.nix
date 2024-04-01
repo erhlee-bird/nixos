@@ -8,6 +8,7 @@
     eww.enable = true;
     hyprland.enable = true;
     kanshi.enable = false;
+    swaylock.enable = true;
     wofi.enable = true;
     work.enable = true;
 

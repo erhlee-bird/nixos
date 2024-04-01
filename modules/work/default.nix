@@ -3,11 +3,13 @@
 with lib;
 let cfg = config.modules.work;
 in {
-  options.work.packages = { enable = mkEnableOption "work"; };
+  options.modules.work = { enable = mkEnableOption "work"; };
   config = mkIf cfg.enable {
     home.packages = with pkgs; [
       # System utilities.
+      cloudflared
       ghidra-bin
+      vault
       yubikey-manager
 
       # Applications.
