@@ -7,7 +7,10 @@ in {
   config = mkIf cfg.enable {
     home.packages = with pkgs; [
       # System utilities.
+      awscli2
+      azure-cli
       cloudflared
+      flyctl
       ghidra-bin
       vault
       yubikey-manager
