@@ -1,13 +1,9 @@
 { config, lib, pkgs, modulesPath, ... }:
 
 {
-  environment.systemPackages = with pkgs; [
-    xfce.xfce4-notifyd
-  ];
+  environment.systemPackages = with pkgs; [ xfce.xfce4-notifyd ];
 
-  programs = {
-    hyprland.enable = true;
-  };
+  programs = { hyprland.enable = true; };
 
   security.pam.services.swaylock.fprintAuth = true;
 

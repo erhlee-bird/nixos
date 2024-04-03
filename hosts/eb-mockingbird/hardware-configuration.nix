@@ -12,21 +12,12 @@ in {
     (modulesPath + "/installer/scan/not-detected.nix")
   ];
 
-  boot.initrd.availableKernelModules = [
-    "nvme"
-    "xhci_pci"
-    "thunderbolt"
-    "uas"
-    "sd_mod"
-  ];
+  boot.initrd.availableKernelModules =
+    [ "nvme" "xhci_pci" "thunderbolt" "uas" "sd_mod" ];
   boot.initrd.kernelModules = [ "dm-snapshot" ];
   boot.kernelModules = [ "kvm-amd" ];
   boot.kernelParams = [ "mem_sleep_default=deep" ];
   boot.extraModulePackages = [ ];
-
-  # Use the systemd-boot EFI boot loader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
 
   # luks
   boot.initrd.luks.devices = {
@@ -55,7 +46,6 @@ in {
 
   networking.useDHCP = lib.mkDefault true;
 
-  services.fprintd.enable = true;
   services.fwupd.enable = true;
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
