@@ -1,6 +1,7 @@
 { config, lib, pkgs, modulesPath, ... }:
 
 {
+  environment.etc."wireguard/wg-laptop.conf".source = "/home/ebird/.local/share/wireguard/wg-laptop.conf";
   environment.systemPackages = with pkgs; [ xfce.xfce4-notifyd ];
 
   programs = { hyprland.enable = true; };
@@ -8,6 +9,7 @@
   security.pam.services.swaylock.fprintAuth = true;
 
   services = {
+    # Enable this for work.
     clamav = {
       daemon.enable = true;
       updater.enable = true;

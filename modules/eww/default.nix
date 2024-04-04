@@ -10,6 +10,7 @@ in {
       brightnessctl
       eww
       lua
+      openresolv
       pavucontrol
       socat
       wireplumber
@@ -35,6 +36,11 @@ in {
       executable = true;
     };
 
+    home.file.".config/eww/scripts/wireguard.sh" = {
+      source = ./scripts/wireguard.sh;
+      executable = true;
+    };
+
     home.file.".config/eww/scripts/workspaces.sh" = {
       source = ./scripts/workspaces.sh;
       executable = true;
@@ -53,6 +59,7 @@ in {
         ExecStart = "${pkgs.writeShellScript "eww.sh" ''
           #!/usr/bin/env bash
 
+          export PATH="${pkgs.openresolv}/bin/:$PATH";
           export PATH="$PATH:/etc/profiles/per-user/$USER/bin:/run/current-system/sw/bin/";
           export EWW_BASE="eww -c $HOME/.config/eww"
           export EWW_SCRIPTS="$HOME/.config/eww/scripts"

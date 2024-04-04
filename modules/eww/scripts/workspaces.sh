@@ -11,9 +11,9 @@ ws_format() {
   local is_focused="$4"
 
   if [[ $is_focused -eq 1 ]]; then
-     echo "  (button :class \"ws-focused\" \"[$ws]\")"
+     echo "  (button :class \"ws-focused\" \"$ws\")"
   elif [[ $is_active -eq 1 ]]; then
-     echo "  (button :class \"ws-active\" \"($ws)\")"
+     echo "  (button :class \"ws-active\" \"$ws\")"
   elif [[ $is_occupied -eq 1 ]]; then
      echo "  (button :class \"ws-occupied\" \"$ws\")"
   fi

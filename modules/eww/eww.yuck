@@ -8,16 +8,12 @@
          "./scripts/battery.sh | jq -r .value")
 (defpoll brightness_percent
          :initial 0
-         :interval "10s"
+         :interval "15s"
          "brightnessctl -m | cut -d ',' -f 4 | tr -d '%'")
-(defpoll calendar_day :interval "4h" "date '+%d'")
-(defpoll calendar_year :interval "24h" "date '+%Y'")
-(defpoll clock_time :interval "1m" "date +\%H")
-(defpoll clock_minute :interval "5s" "date +\%M")
-(defpoll clock_date :interval "4h" "date '+%A %F'")
+(defpoll clock_time :interval "5s" "date '+%a - %b %d | %H:%M'")
 (defpoll volume_percent
          :initial 0
-         :interval "1s" "wpctl get-volume @DEFAULT_AUDIO_SINK@ | cut -d . -f 2")
+         :interval "15s" "wpctl get-volume @DEFAULT_AUDIO_SINK@ | cut -d . -f 2")
 (defpoll wifi_ssid :interval "1m" "./scripts/wifi.sh | jq -r .ssid")
 (defpoll wifi_icon :interval "1m" "./scripts/wifi.sh | jq -r .icon")
 (defpoll window_title
@@ -73,36 +69,20 @@
                :class "brightness-bar"
                :max 100
                :min 0
-               :onchange "brightnessctl set {}%"
+               :onchange "eww update brightness_percent={}; brightnessctl set {}%"
                :orientation "h"
                :tooltip "${brightness_percent}%"
                :value brightness_percent)))))
 
 (defwidget widget-clock []
-           (eventbox
-            :onhover "${eww} update show_clock_widget=true"
-            :onhoverlost "${eww} update show_clock_widget=false"
-            (box
-             :class "clock-widget"
-             :orientation "h"
-             :space-evenly "false"
-             :spacing "3"
-             (label
-              :class "clock-time"
-              :text clock_time)
-             (label
-              :class "clock-time-sep"
-              :text ":")
-             (label
-              :class "clock-minute"
-              :text clock_minute)
-             (revealer
-              :duration "350ms"
-              :reveal show_clock_widget
-              :transition "slideleft"
-              (button
-               :class "revealed"
-               :onclick "${eww_scripts}/pop calendar" clock_date)))))
+           (box
+            :class "clock-widget"
+            :orientation "h"
+            :space-evenly "false"
+            :spacing "3"
+            (label
+             :class "clock-time"
+             :text clock_time)))
 
 (defwidget widget-separator []
            (box
@@ -115,9 +95,10 @@
 (defwidget widget-volume []
            (eventbox
             :onclick "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
-            :onrightclick "pavucontrol"
+            :onrightclick "pavucontrol &"
             :onhover "${eww} update show_volume_widget=true"
             :onhoverlost "${eww} update show_volume_widget=false"
+            :timeout "15000ms"
             (box
              :class "volume-widget"
              :orientation "h"
@@ -142,15 +123,17 @@
                 :class "volume-bar"
                 :max 100
                 :min 0
-                :onchange "wpctl set-volume @DEFAULT_AUDIO_SINK@ {}%"
+                :onchange "eww update volume_percent={}; wpctl set-volume @DEFAULT_AUDIO_SINK@ {}%"
                 :orientation "h"
                 :tooltip "${volume_percent}%"
                 :value volume_percent))))))
 
 (defwidget widget-wifi []
            (eventbox
+            :onrightclick "${eww_scripts}/wireguard.sh toggle; sleep 1"
             :onhover "${eww} update show_wifi_widget=true"
             :onhoverlost "${eww} update show_wifi_widget=false"
+            :timeout "15000ms"
             (box
              :class "wifi-widget"
              :hexpand "false"
