@@ -8,6 +8,7 @@
     ./fonts.nix
     ./networking.nix
     ./packages.nix
+    ./printing.nix
     ./security.nix
     ./sound.nix
     ./upgrade.nix

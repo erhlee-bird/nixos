@@ -23,6 +23,7 @@ in {
       tmux
       unzip
       vim
+      xdg-utils
       yadm
       yubikey-manager
       zip
