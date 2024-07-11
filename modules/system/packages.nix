@@ -12,19 +12,27 @@
 
     systemPackages = with pkgs; [
       acpi
+      appimage-run
       direnv
       file
+      gh
       git
       jq
       killall
-      magic-wormhole
-      nixfmt
+      python311Packages.magic-wormhole
+      nixfmt-rfc-style
       ripgrep
       tlp
       vim
       wireguard-tools
     ];
   };
+
+  # NB: In directories with a `.envrc` file and a `flake.nix file, populate the
+  #     `.envrc` file with `use flake` or `use flake . --impure` to enable
+  #     devshells.
+  programs.direnv.enable = true;
+  programs.nix-ld.enable = true;
 
   virtualisation.docker.enable = true;
 }

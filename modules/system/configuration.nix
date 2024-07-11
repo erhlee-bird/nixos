@@ -32,12 +32,7 @@
     DISABLE_QT5_COMPAT = "0";
   };
 
-  hardware = {
-    opengl = {
-      enable = true;
-      driSupport = true;
-    };
-  };
+  hardware.graphics.enable = true;
 
   system.stateVersion = "20.09";
 }

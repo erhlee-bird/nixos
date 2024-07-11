@@ -5,6 +5,7 @@ let cfg = config.modules.packages;
 in {
   options.modules.packages = { enable = mkEnableOption "packages"; };
   config = mkIf cfg.enable {
+    home.enableNixpkgsReleaseCheck = false;
     home.packages = with pkgs; [
       # System utilities.
       emacs

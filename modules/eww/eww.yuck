@@ -20,7 +20,10 @@
          :interval "1s"
          "hyprctl activeworkspace -j | jq -r '.lastwindowtitle'")
 
-(deflisten workspace "./scripts/workspaces.sh 2")
+(defpoll workspace
+         :interval "1s"
+         "./scripts/workspaces.sh 2")
+; (deflisten workspace "./scripts/workspaces.sh 2")
 
 (defvar eww "eww -c $HOME/.config/eww")
 (defvar eww_scripts "$HOME/.config/eww/scripts")
