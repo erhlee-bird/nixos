@@ -12,7 +12,7 @@ in {
       cloudflared
       flyctl
       ghidra-bin
-      vault
+      vault-bin
       yubikey-manager
 
       # Applications.

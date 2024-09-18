@@ -4,8 +4,10 @@
 { config, lib, pkgs, modulesPath, ... }:
 
 let
-  nixos-hardware = builtins.fetchTarball
-    "https://github.com/NixOS/nixos-hardware/archive/master.tar.gz";
+  nixos-hardware = builtins.fetchGit {
+    url = "https://github.com/NixOS/nixos-hardware.git";
+    ref = "master";
+  };
 in {
   imports = [
     (import "${nixos-hardware}/framework/13-inch/7040-amd")

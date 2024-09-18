@@ -8,6 +8,7 @@ in {
     home.enableNixpkgsReleaseCheck = false;
     home.packages = with pkgs; [
       # System utilities.
+      devenv
       emacs
       entr
       file
