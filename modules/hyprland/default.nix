@@ -17,11 +17,33 @@ in {
       wofi
     ];
 
+    home.file.".config/hypr/fakefullscreen_hook.sh".source = ./fakefullscreen_hook.sh;
     home.file.".config/hypr/hyprland.conf".source = ./hyprland.conf;
     home.file.".config/hypr/hyprshade.toml".source = ./hyprshade.toml;
     home.file.".config/hypr/pyprland.toml".source = ./pyprland.toml;
     home.file.".config/hypr/shaders/blue-light-filter.glsl".source =
       "${pkgs.hyprshade}/share/hyprshade/shaders/blue-light-filter.glsl";
+
+    systemd.user.services.fakefullscreen_hook = {
+      Unit = {
+        Description = "Service to run fakefullscreen_hook.sh for Hyprland.";
+        Requires = [ "graphical-session.target" ];
+      };
+
+      Install = { WantedBy = [ "default.target" ]; };
+
+      Service = {
+        Type = "simple";
+        ExecStart = "${pkgs.writeShellScript "fakefullscreen_hook.sh" ''
+          #!/usr/bin/env bash
+
+          export PATH="$PATH:/etc/profiles/per-user/$USER/bin";
+          exec ${home.file.".config/hypr/fakefullscreen_hook.sh"}
+        ''}";
+        Restart = "always";
+        RestartSec = 5;
+      };
+    };
 
     systemd.user.services.pypr = {
       Unit = {

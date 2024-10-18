@@ -11,6 +11,7 @@ in {
       devenv
       emacs
       entr
+      ffmpeg
       file
       fzf
       git
@@ -23,12 +24,19 @@ in {
       p7zip
       ripgrep
       tmux
+      tree
       unzip
       vim
+      whisper
       xdg-utils
       yadm
       yubikey-manager
       zip
+
+      # Language Servers.
+      bash-language-server
+      shellcheck
+      yaml-language-server
 
       # Applications.
       google-chrome

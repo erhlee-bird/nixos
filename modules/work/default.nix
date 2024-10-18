@@ -8,7 +8,7 @@ in {
     home.packages = with pkgs; [
       # System utilities.
       awscli2
-      azure-cli
+      # azure-cli (broken in unstable 10-17-24)
       cloudflared
       flyctl
       ghidra-bin

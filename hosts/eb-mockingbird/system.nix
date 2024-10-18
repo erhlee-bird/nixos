@@ -2,9 +2,23 @@
 
 {
   environment.etc."wireguard/wg-laptop.conf".source = "/home/ebird/.local/share/wireguard/wg-laptop.conf";
-  environment.systemPackages = with pkgs; [ xfce.xfce4-notifyd ];
+  environment.systemPackages = with pkgs; [
+    xfce.xfce4-notifyd
+  ];
 
-  programs = { hyprland.enable = true; };
+  nix.settings.trusted-users = [ "@wheel" ];
+
+  programs = {
+    hyprland.enable = true;
+    uwsm.enable = true;
+    uwsm.waylandCompositors = {
+      hyprland = {
+        prettyName = "Hyprland";
+        comment = "Hyprland compositor managed by UWSM";
+        binPath = "/run/current-system/sw/bin/Hyprland";
+      };
+    };
+  };
 
   security.pam.services.swaylock.fprintAuth = true;
 
@@ -15,18 +29,6 @@
       updater.enable = true;
     };
 
-    greetd = {
-      enable = true;
-      restart = false;
-      settings = rec {
-        initial_session = {
-          command = "dbus-run-session ${pkgs.hyprland}/bin/Hyprland";
-          user = "ebird";
-        };
-        default_session = initial_session;
-      };
-    };
-
     logind = {
       lidSwitch = "suspend-then-hibernate";
       extraConfig = ''
@@ -35,9 +37,20 @@
         IdleActionSec=2m
       '';
     };
+
+    xserver.displayManager.gdm = {
+      enable = true;
+      wayland = true;
+    };
+    xserver.desktopManager.runXdgAutostartIfNone = true;
+    xserver.enable = true;
   };
 
   systemd.sleep.extraConfig = "HibernateDelaySec=2h";
+  systemd.user.services."wayland-wm-env@" = {
+    path = config.services.displayManager.sessionPackages;
+    overrideStrategy = "asDropin";
+  };
 
   xdg.portal.enable = true;
   xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];

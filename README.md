@@ -103,6 +103,8 @@ Lastly, build the configuration with
 
 ```bash
 sudo nixos-rebuild switch --flake .#yourComputer
+
+sudo nixos-rebuild switch --flake .#mockingbird --impure
 ```
 
 And that should be it! If there are any issues please don't hesistate to [submit an issue](https://github.com/notusknot/dotfiles-nix/issues) or contact me.
