@@ -17,7 +17,6 @@ in {
       wofi
     ];
 
-    home.file.".config/hypr/fakefullscreen_hook.sh".source = ./fakefullscreen_hook.sh;
     home.file.".config/hypr/hyprland.conf".source = ./hyprland.conf;
     home.file.".config/hypr/hyprshade.toml".source = ./hyprshade.toml;
     home.file.".config/hypr/pyprland.toml".source = ./pyprland.toml;
@@ -37,8 +36,9 @@ in {
         ExecStart = "${pkgs.writeShellScript "fakefullscreen_hook.sh" ''
           #!/usr/bin/env bash
 
+          export NIXOS_CONFIG_DIR="$HOME/.config/nixos";
           export PATH="$PATH:/etc/profiles/per-user/$USER/bin";
-          exec ${home.file.".config/hypr/fakefullscreen_hook.sh"}
+          exec "$NIXOS_CONFIG_DIR/modules/hyprland/fakefullscreen_hook.sh"
         ''}";
         Restart = "always";
         RestartSec = 5;
