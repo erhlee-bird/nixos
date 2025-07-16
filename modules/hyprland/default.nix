@@ -22,6 +22,7 @@ in {
     home.file.".config/hypr/pyprland.toml".source = ./pyprland.toml;
     home.file.".config/hypr/shaders/blue-light-filter.glsl".source =
       "${pkgs.hyprshade}/share/hyprshade/shaders/blue-light-filter.glsl";
+    home.file.".config/hypr/xdph.conf".source = ./xdph.conf;
 
     systemd.user.services.fakefullscreen_hook = {
       Unit = {

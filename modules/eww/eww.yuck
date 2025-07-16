@@ -18,7 +18,7 @@
 (defpoll wifi_icon :interval "1m" "./scripts/wifi.sh | jq -r .icon")
 (defpoll window_title
          :interval "1s"
-         "hyprctl activeworkspace -j | jq -r '.lastwindowtitle'")
+         "hyprctl activeworkspace -j | jq -r '.lastwindowtitle | .[0:80]'")
 
 (defpoll workspace
          :interval "1s"
@@ -211,7 +211,7 @@
                                :width "99%"
                                :height "48px"
                                :anchor "top center")
-           :monitor '[2, 0]'
+           :monitor '[1, 0]'
            :stacking "fg"
            :windowtype "dock"
            (widget-bar))

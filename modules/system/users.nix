@@ -6,6 +6,8 @@
     extraGroups = [
       "audio"
       "input"
+      "kvm"
+      "libvirtd"
       "lp"
       "networkmanager"
       "plugdev"

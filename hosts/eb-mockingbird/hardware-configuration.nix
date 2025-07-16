@@ -17,9 +17,23 @@ in {
   boot.initrd.availableKernelModules =
     [ "nvme" "xhci_pci" "thunderbolt" "uas" "sd_mod" ];
   boot.initrd.kernelModules = [ "dm-snapshot" ];
-  boot.kernelModules = [ "kvm-amd" ];
+  boot.kernelModules = [
+    # NB: Disabled due to conflict with Virtualbox.
+    # "kvm-amd"
+    # Virtual Microphone, built-in
+    "snd-aloop"
+    # Virtual Camera
+    "v4l2loopback"
+  ];
   boot.kernelParams = [ "mem_sleep_default=deep" ];
-  boot.extraModulePackages = [ ];
+  boot.extraModprobeConfig = ''
+    options v4l2loopback exclusive_caps=1 card_label="Virtual Camera"
+  '';
+  boot.extraModulePackages = with config.boot.kernelPackages; [
+    v4l2loopback.out
+  ];
+
+  boot.supportedFilesystems = [ "ntfs" ];
 
   # luks
   boot.initrd.luks.devices = {

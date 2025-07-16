@@ -21,7 +21,7 @@
       font-awesome
       inconsolata
       joypixels
-      (nerdfonts.override { fonts = [ "NerdFontsSymbolsOnly" ]; })
+      nerd-fonts.symbols-only
       noto-fonts
       noto-fonts-color-emoji
       source-code-pro

@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# https://github.com/hyprwm/Hyprland/issues/871
+
 # NB: Event grabbed from fullscreening.
 #
 # WINDOWADDRESS,WORKSPACENAME,WINDOWCLASS,WINDOWTITLE
@@ -16,8 +18,12 @@ handle() {
       # When that happens, we resize the activewindow so that its geometry gets
       # set appropriately..
       if [[ -z "$WINDOWCLASS" && -z "$WINDOWTITLE" ]]; then
-        hyprctl dispatch resizeactive 1 0
-        hyprctl dispatch resizeactive -1 0
+        if [[ "$(hyprctl activewindow -j | jq -r '.class')" = "google-chrome" ]]; then
+          hyprctl dispatch resizeactive 1 0
+          hyprctl dispatch resizeactive -1 0
+        elif [[ -z "$(hyprctl activewindow -j | jq -r '.class')" ]]; then
+          hyprctl dispatch setfloating
+        fi
       fi
       ;;
   esac

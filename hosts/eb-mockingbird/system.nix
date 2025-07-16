@@ -1,7 +1,15 @@
-{ config, lib, pkgs, modulesPath, ... }:
+{ config, inputs, lib, pkgs, modulesPath, ... }:
 
 {
+  # environment.etc."greetd/environments".text =
+    # lib.concatMapStrings (session: "uwsm start ${session}\n")
+      # config.services.displayManager.sessionData.sessionNames;
+
+  environment.etc."osquery/fleet.pem".source = ./fleet.pem;
+  environment.etc."osquery/osquery.flags".source = ./flagfile.txt;
+  environment.etc."osquery/secret.txt".source = ./secret.txt;
   environment.etc."wireguard/wg-laptop.conf".source = "/home/ebird/.local/share/wireguard/wg-laptop.conf";
+
   environment.systemPackages = with pkgs; [
     xfce.xfce4-notifyd
   ];
@@ -10,7 +18,13 @@
 
   programs = {
     hyprland.enable = true;
-    uwsm.enable = true;
+    hyprland.portalPackage = pkgs.xdg-desktop-portal-hyprland;
+    regreet = {
+      enable = true;
+      cageArgs = [ "-s" "-d" "-m" "last" ];
+      theme.package = pkgs.canta-theme;
+    };
+    uwsm.enable = false;
     uwsm.waylandCompositors = {
       hyprland = {
         prettyName = "Hyprland";
@@ -20,7 +34,9 @@
     };
   };
 
-  security.pam.services.swaylock.fprintAuth = true;
+  security.pam.services.swaylock = {
+    fprintAuth = true;
+  };
 
   services = {
     # Enable this for work.
@@ -28,6 +44,8 @@
       daemon.enable = true;
       updater.enable = true;
     };
+
+    greetd.enable = true;
 
     logind = {
       lidSwitch = "suspend-then-hibernate";
@@ -38,12 +56,20 @@
       '';
     };
 
-    xserver.displayManager.gdm = {
-      enable = true;
-      wayland = true;
-    };
     xserver.desktopManager.runXdgAutostartIfNone = true;
-    xserver.enable = true;
+    # xserver.enable = true;
+  };
+
+  # Fix for not being able to switch when systemd unit has newlines.
+  # - https://github.com/NixOS/nixpkgs/issues/342642
+  system.switch.enableNg = false;
+
+  systemd.services.osquery = {
+    enable = true;
+    serviceConfig = {
+      ExecStart = ''${pkgs.osquery}/bin/osqueryd --flagfile /etc/osquery/osquery.flags'';
+      Type = "simple";
+    };
   };
 
   systemd.sleep.extraConfig = "HibernateDelaySec=2h";
@@ -53,5 +79,9 @@
   };
 
   xdg.portal.enable = true;
-  xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+  # xdg.portal.wlr.enable = true;
+  xdg.portal.extraPortals = with pkgs; [
+    xdg-desktop-portal-gtk
+  ];
+  xdg.portal.xdgOpenUsePortal = true;
 }

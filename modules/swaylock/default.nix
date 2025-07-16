@@ -8,20 +8,22 @@ in {
     home.packages = with pkgs; [
       sway-audio-idle-inhibit
       swayidle
-      swaylock-effects
+      swaylock
+      # XXX: The effects package is over 2 years old. Need to point to a git version.
+      # swaylock-effects
     ];
 
     programs.swaylock = {
-      package = pkgs.swaylock-effects;
+      # package = pkgs.swaylock-effects;
+      package = pkgs.swaylock;
 
       settings = {
         ignore-empty-password = false;
         disable-caps-lock-text = true;
-        font = "Inconsolata";
 
-        clock = true;
-        timestr = "%R";
-        datestr = "%a,%e of %B";
+        # clock = true;
+        # timestr = "%R";
+        # datestr = "%a,%e of %B";
 
         # XXX: How do I get this from the flake params?
         image = "/home/ebird/.config/nixos/images/background.jpg";
@@ -37,7 +39,8 @@ in {
       events = [
         {
           event = "before-sleep";
-          command = "${pkgs.swaylock-effects}/bin/swaylock -dfF";
+          # command = "${pkgs.swaylock-effects}/bin/swaylock -dfF";
+          command = "${pkgs.swaylock}/bin/swaylock -dfF";
         }
         {
           event = "after-resume";
@@ -45,13 +48,15 @@ in {
         }
         {
           event = "lock";
-          command = "${pkgs.swaylock-effects}/bin/swaylock -dfF";
+          # command = "${pkgs.swaylock-effects}/bin/swaylock -dfF";
+          command = "${pkgs.swaylock}/bin/swaylock -dfF";
         }
       ];
       timeouts = [
         {
           timeout = 300;
-          command = "${pkgs.swaylock-effects}/bin/swaylock -dfF";
+          # command = "${pkgs.swaylock-effects}/bin/swaylock -dfF";
+          command = "${pkgs.swaylock}/bin/swaylock -dfF";
         }
         {
           timeout = 900;

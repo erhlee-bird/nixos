@@ -64,7 +64,7 @@ in {
           export EWW_BASE="eww -c $HOME/.config/eww"
           export EWW_SCRIPTS="$HOME/.config/eww/scripts"
 
-          exec eww daemon -c $HOME/.config/eww --no-daemonize --debug
+          exec eww daemon -c $HOME/.config/eww --no-daemonize
         ''}";
         Restart = "always";
         RestartSec = 5;
